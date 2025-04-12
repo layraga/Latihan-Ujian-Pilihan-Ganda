@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Akhir Semester Biologi - Kelas 12 IPA 1</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #1b5e20;
+            --accent: #4caf50;
+            --light: #e8f5e9;
+            --dark: #1a1a1a;
+            --danger: #d32f2f;
+            --warning: #ff9800;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .exam-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .start-screen, .exam-content, .results-screen {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .exam-content {
+            display: none;
+        }
+        
+        .results-screen {
+            display: none;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: 8px;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .options {
+            margin-top: 15px;
+        }
+        
+        .option {
+            display: block;
+            padding: 10px;
+            margin: 8px 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            background-color: #f0f0f0;
+            border-color: var(--accent);
+        }
+        
+        .option input {
+            margin-right: 10px;
+        }
+        
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .timer.warning {
+            color: var(--warning);
+        }
+        
+        .timer.danger {
+            color: var(--danger);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .correct {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 5px solid #4caf50;
+        }
+        
+        .incorrect {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left: 5px solid #f44336;
+        }
+        
+        .correct-answer {
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 10px;
+        }
+        
+        .score-summary {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 30px;
+            background-color: var(--accent);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ujian Akhir Semester Biologi</h1>
+            <p>Kelas 12 IPA 1</p>
+        </header>
+        
+        <div class="exam-info">
+            <h2>Petunjuk Ujian</h2>
+            <ul>
+                <li>Ujian ini terdiri dari 50 soal pilihan ganda</li>
+                <li>Waktu pengerjaan adalah 90 menit</li>
+                <li>Setiap soal hanya memiliki satu jawaban yang benar</li>
+                <li>Klik "Selesai" setelah Anda menyelesaikan semua soal</li>
+                <li>Hasil ujian akan ditampilkan setelah pengumpulan</li>
+            </ul>
+        </div>
+        
+        <div class="start-screen" id="startScreen">
+            <h2>Siap Untuk Memulai?</h2>
+            <p>Klik tombol Mulai ketika Anda siap untuk memulai ujian. Timer akan langsung berjalan.</p>
+            <button class="btn" id="startBtn">Mulai Ujian</button>
+        </div>
+        
+        <div class="exam-content" id="examContent">
+            <div class="timer-container">
+                <div class="timer" id="timer">90:00</div>
+            </div>
+            
+            <div id="questionsContainer"></div>
+            
+            <div class="navigation">
+                <button class="btn" id="prevBtn">Sebelumnya</button>
+                <div>
+                    <span id="currentQuestion">1</span> / <span id="totalQuestions">50</span>
+                </div>
+                <button class="btn" id="nextBtn">Selanjutnya</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-danger" id="submitBtn">Selesai Ujian</button>
+            </div>
+        </div>
+        
+        <div class="results-screen" id="resultsScreen">
+            <div class="score-summary">
+                <h2>Hasil Ujian Anda</h2>
+                <div class="score" id="score">0/50</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+                </div>
+            </div>
+            
+            <h3>Tinjauan Soal dan Jawaban</h3>
+            <div id="resultsContainer"></div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" id="restartBtn">Ulangi Ujian</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Questions data
+        const questions = [
+            {
+                question: "Organel manakah yang bertanggung jawab untuk respirasi seluler?",
+                options: ["Nukleus", "Mitokondria", "Aparatus Golgi", "Retikulum endoplasma"],
+                answer: 1
+            },
+            {
+                question: "Proses dimana tumbuhan membuat makanannya sendiri disebut:",
+                options: ["Respirasi", "Fotosintesis", "Transpirasi", "Pencernaan"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan fungsi sistem rangka manusia?",
+                options: ["Perlindungan organ internal", "Produksi sel darah", "Penyimpanan mineral", "Produksi enzim pencernaan"],
+                answer: 3
+            },
+            {
+                question: "Unit dasar dari pewarisan sifat adalah:",
+                options: ["Sel", "Kromosom", "Gen", "Nukleus"],
+                answer: 2
+            },
+            {
+                question: "Hormon manakah yang bertanggung jawab untuk mengatur kadar glukosa darah?",
+                options: ["Insulin", "Tiroksin", "Estrogen", "Testosteron"],
+                answer: 0
+            },
+            {
+                question: "Apa fungsi utama sel darah merah?",
+                options: ["Pembekuan darah", "Melawan infeksi", "Membawa oksigen", "Memproduksi antibodi"],
+                answer: 2
+            },
+            {
+                question: "Pertukaran gas di paru-paru terjadi di:",
+                options: ["Bronkus", "Trakea", "Bronkiolus", "Alveolus"],
+                answer: 3
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan basa nitrogen yang ditemukan dalam DNA?",
+                options: ["Adenin", "Timin", "Urasil", "Guanin"],
+                answer: 2
+            },
+            {
+                question: "Apa nama proses pembelahan sel yang menghasilkan sel-sel reproduksi?",
+                options: ["Mitosis", "Meiosis", "Pembelahan biner", "Pembentukan tunas"],
+                answer: 1
+            },
+            {
+                question: "Sistem saraf manusia terdiri dari:",
+                options: ["Sistem saraf pusat saja", "Sistem saraf tepi saja", "Sistem saraf pusat dan tepi", "Bukan sistem saraf pusat maupun tepi"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang merupakan fungsi hati?",
+                options: ["Produksi insulin", "Penyimpanan urin", "Detoksifikasi zat berbahaya", "Penyerapan nutrisi"],
+                answer: 2
+            },
+            {
+                question: "Unit fungsional terkecil dari ginjal disebut:",
+                options: ["Nefron", "Neuron", "Alveolus", "Vili"],
+                answer: 0
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan bagian dari sistem pencernaan manusia?",
+                options: ["Esofagus", "Pankreas", "Trakea", "Usus kecil"],
+                answer: 2
+            },
+            {
+                question: "Jantung manusia memiliki berapa ruang?",
+                options: ["2", "3", "4", "5"],
+                answer: 2
+            },
+            {
+                question: "Pembuluh darah manakah yang membawa darah keluar dari jantung?",
+                options: ["Vena", "Arteri", "Kapiler", "Venula"],
+                answer: 1
+            },
+            {
+                question: "Teori seleksi alam diusulkan oleh:",
+                options: ["Gregor Mendel", "Louis Pasteur", "Charles Darwin", "Alexander Fleming"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan fungsi kulit?",
+                options: ["Perlindungan", "Pengaturan suhu", "Ekskresi", "Pencernaan"],
+                answer: 3
+            },
+            {
+                question: "Proses dimana sel menelan partikel padat disebut:",
+                options: ["Pinositosis", "Fagositosis", "Eksositosis", "Osmosis"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari hormon berikut yang TIDAK diproduksi oleh kelenjar pituitari?",
+                options: ["Hormon pertumbuhan", "Prolaktin", "Insulin", "Hormon perangsang tiroid"],
+                answer: 2
+            },
+            {
+                question: "Proses mengubah informasi genetik dari DNA ke RNA disebut:",
+                options: ["Translasi", "Transkripsi", "Replikasi", "Mutasi"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang merupakan contoh mekanisme umpan balik negatif?",
+                options: ["Pembekuan darah", "Melahirkan", "Pengaturan suhu tubuh", "Pematangan buah"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan komponen ekosistem?",
+                options: ["Produsen", "Konsumen", "Pengurai", "Elemen"],
+                answer: 3
+            },
+            {
+                question: "Unit struktural dan fungsional dasar dari sistem saraf adalah:",
+                options: ["Nefron", "Neuron", "Alveolus", "Sarkomer"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan jenis jaringan otot?",
+                options: ["Otot rangka", "Otot jantung", "Otot polos", "Otot epitel"],
+                answer: 3
+            },
+            {
+                question: "Fungsi utama sistem limfatik adalah:",
+                options: ["Transport nutrisi", "Transport oksigen", "Mengembalikan cairan jaringan ke darah", "Produksi hormon"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang merupakan contoh organ vestigial pada manusia?",
+                options: ["Jantung", "Hati", "Usus buntu", "Otak"],
+                answer: 2
+            },
+            {
+                question: "Proses tumbuhan membengkok ke arah cahaya disebut:",
+                options: ["Fototropisme", "Geotropisme", "Hidrotropisme", "Tigmotropisme"],
+                answer: 0
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan metode reproduksi aseksual?",
+                options: ["Pembentukan tunas", "Fragmentasi", "Pembentukan spora", "Fertilisasi"],
+                answer: 3
+            },
+            {
+                question: "Pembekuan darah terutama merupakan fungsi dari:",
+                options: ["Sel darah merah", "Sel darah putih", "Trombosit", "Plasma"],
+                answer: 2
+            },
+            {
+                question: "Mata uang energi sel adalah:",
+                options: ["ADP", "ATP", "GTP", "DNA"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan fase mitosis?",
+                options: ["Profase", "Metafase", "Sintesis", "Anafase"],
+                answer: 2
+            },
+            {
+                question: "Aparatus Golgi terutama bertanggung jawab untuk:",
+                options: ["Sintesis protein", "Respirasi seluler", "Memproses dan mengemas protein", "Replikasi DNA"],
+                answer: 2
+            },
+            {
+                question: "pH darah manusia kira-kira:",
+                options: ["5,5", "7,4", "8,5", "9,2"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN bagian dari sistem endokrin manusia?",
+                options: ["Kelenjar tiroid", "Kelenjar adrenal", "Kelenjar pituitari", "Kelenjar ludah"],
+                answer: 3
+            },
+            {
+                question: "Proses dimana organisme kompleks berkembang dari sel tunggal disebut:",
+                options: ["Evolusi", "Embriogenesis", "Metamorfosis", "Regenerasi"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan fungsi air dalam organisme hidup?",
+                options: ["Media transport", "Pengaturan suhu", "Produksi enzim", "Pelarut"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang merupakan contoh pewarisan poligenik?",
+                options: ["Golongan darah", "Warna mata", "Tinggi badan", "Hemofilia"],
+                answer: 2
+            },
+            {
+                question: "Fungsi utama kloroplas adalah:",
+                options: ["Sintesis protein", "Fotosintesis", "Respirasi", "Penyimpanan"],
+                answer: 1
+            },
+            {
+                question: "Pembuluh darah manakah yang memiliki diameter terkecil?",
+                options: ["Arteri", "Vena", "Kapiler", "Venula"],
+                answer: 2
+            },
+            {
+                question: "Pemecahan makanan menjadi molekul yang lebih kecil disebut:",
+                options: ["Absorpsi", "Asimilasi", "Pencernaan", "Egesti"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan karakteristik semua organisme hidup?",
+                options: ["Reproduksi", "Respirasi", "Fotosintesis", "Ekskresi"],
+                answer: 2
+            },
+            {
+                question: "Lapisan terluar sel tumbuhan adalah:",
+                options: ["Membran sel", "Dinding sel", "Membran nukleus", "Sitoplasma"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan contoh perilaku bawaan?",
+                options: ["Migrasi", "Tindakan refleks", "Menggunakan alat", "Bernafas"],
+                answer: 2
+            },
+            {
+                question: "Pembuluh darah terkecil disebut:",
+                options: ["Arteri", "Vena", "Kapiler", "Venula"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan bagian dari otak manusia?",
+                options: ["Serebrum", "Serebelum", "Medula oblongata", "Pankreas"],
+                answer: 3
+            },
+            {
+                question: "Proses dimana tumbuhan kehilangan air melalui daunnya disebut:",
+                options: ["Transpirasi", "Respirasi", "Fotosintesis", "Evaporasi"],
+                answer: 0
+            },
+            {
+                question: "Materi genetik pada manusia diorganisasi menjadi berapa pasang kromosom?",
+                options: ["21", "23", "46", "48"],
+                answer: 1
+            },
+            {
+                question: "Manakah dari berikut ini yang BUKAN merupakan komponen biotik ekosistem?",
+                options: ["Tumbuhan", "Hewan", "Mikroorganisme", "Udara"],
+                answer: 3
+            },
+            {
+                question: "Teori pewarisan sifat yang diperoleh diusulkan oleh:",
+                options: ["Charles Darwin", "Gregor Mendel", "Jean-Baptiste Lamarck", "Alfred Wallace"],
+                answer: 2
+            },
+            {
+                question: "Manakah dari berikut ini yang merupakan urutan aliran darah yang benar melalui jantung?",
+                options: ["Atrium kanan → Ventrikel kanan → Paru-paru → Atrium kiri → Ventrikel kiri → Tubuh", 
+                        "Atrium kiri → Ventrikel kiri → Paru-paru → Atrium kanan → Ventrikel kanan → Tubuh",
+                        "Atrium kanan → Atrium kiri → Ventrikel kanan → Ventrikel kiri → Paru-paru → Tubuh",
+                        "Ventrikel kiri → Atrium kiri → Ventrikel kanan → Atrium kanan → Paru-paru → Tubuh"],
+                answer: 0
+            },
+            {
+                question: "Apa peran vili di usus kecil?",
+                options: ["Untuk mensekresi enzim pencernaan", "Untuk meningkatkan luas permukaan untuk penyerapan", "Untuk menggerakkan makanan di sepanjang usus", "Untuk menyimpan makanan yang tidak dicerna"],
+                answer: 1
+            }
+        ];
+
+        // Global variables
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timer;
+        let timeLeft = 90 * 60; // 90 minutes in seconds
+
+        // DOM Elements
+        const startScreen = document.getElementById('startScreen');
+        const examContent = document.getElementById('examContent');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const totalQuestionsSpan = document.getElementById('totalQuestions');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const timerContainer = document.querySelector('.timer-container');
+        const timerElement = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const scoreElement = document.getElementById('score');
+        const progressBar = document.getElementById('progressBar');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Initialize the exam
+        function initExam() {
+            totalQuestionsSpan.textContent = questions.length;
+            renderQuestion(currentQuestionIndex);
+            updateNavButtons();
+        }
+
+        // Render a specific question
+        function renderQuestion(index) {
+            currentQuestionSpan.textContent = index + 1;
+            
+            const question = questions[index];
+            
+            questionsContainer.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Soal ${index + 1} dari ${questions.length}</div>
+                    <div class="question">${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((option, i) => `
+                            <label class="option">
+                                <input type="radio" name="question${index}" value="${i}" ${userAnswers[index] === i ? 'checked' : ''}>
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners to options
+            const optionInputs = document.querySelectorAll(`input[name="question${index}"]`);
+            optionInputs.forEach((input, i) => {
+                input.addEventListener('change', () => {
+                    userAnswers[index] = i;
+                });
+            });
+        }
+
+        // Update navigation buttons
+        function updateNavButtons() {
+            prevBtn.style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
+            nextBtn.style.visibility = currentQuestionIndex === questions.length - 1 ? 'hidden' : 'visible';
+        }
+
+        // Format time (convert seconds to MM:SS)
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Start the timer
+        function startTimer() {
+            timerContainer.style.display = 'block';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = formatTime(timeLeft);
+                
+                // Warning colors for timer
+                if (timeLeft <= 300) { // 5 minutes
+                    timerElement.className = 'timer danger';
+                } else if (timeLeft <= 600) { // 10 minutes
+                    timerElement.className = 'timer warning';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // Calculate score and display results
+        function submitExam() {
+            clearInterval(timer);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === questions[index].answer) {
+                    correctAnswers++;
+                }
+            });
+            
+            const score = correctAnswers;
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            // Update results screen
+            scoreElement.textContent = `${score}/${questions.length}`;
+            progressBar.style.width = `${percentage}%`;
+            progressBar.textContent = `${percentage}%`;
+            
+            // Generate results breakdown
+            resultsContainer.innerHTML = '';
+            questions.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.answer;
+                const userAnswer = userAnswers[index] !== null ? question.options[userAnswers[index]] : 'Tidak dijawab';
+                const correctAnswer = question.options[question.answer];
+                
+                resultsContainer.innerHTML += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="question-number">Soal ${index + 1}</div>
+                        <div class="question">${question.question}</div>
+                        <div>Jawaban Anda: ${userAnswer}</div>
+                        ${!isCorrect ? `<div class="correct-answer">Jawaban benar: ${correctAnswer}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Show results screen
+            examContent.style.display = 'none';
+            resultsScreen.style.display = 'block';
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            examContent.style.display = 'block';
+            startTimer();
+            initExam();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentQuestionIndex--;
+            renderQuestion(currentQuestionIndex);
+            updateNavButtons();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            renderQuestion(currentQuestionIndex);
+            updateNavButtons();
+        });
+
+        submitBtn.addEventListener('click', () => {
+            // Check if all questions are answered
+            const unansweredQuestions = userAnswers.filter(answer => answer === null).length;
+            
+            if (unansweredQuestions > 0) {
+                if (confirm(`Anda memiliki ${unansweredQuestions} soal yang belum dijawab. Apakah Anda yakin ingin mengumpulkan?`)) {
+                    submitExam();
+                }
+            } else {
+                submitExam();
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            // Reset everything
+            currentQuestionIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            timeLeft = 90 * 60;
+            timerElement.textContent = formatTime(timeLeft);
+            timerElement.className = 'timer';
+            
+            // Go back to start screen
+            resultsScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
